@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover"
+    />
+    <title>IRMANUFA Finance - Digital Treasury</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Custom Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- Notification Modal -->
+    <div id="notificationModal" class="notification-modal">
+      <div class="notification-modal-content">
+        <div class="notification-icon" id="notificationIcon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3 id="notificationTitle">Konfirmasi</h3>
+        <p id="notificationMessage">Apakah Anda yakin?</p>
+        <div class="notification-buttons">
+          <button class="notification-btn cancel" id="notificationCancel">
+            Batal
+          </button>
+          <button class="notification-btn confirm" id="notificationConfirm">
+            Ya, Lanjutkan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="toast-notification"></div>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header" id="mobileHeader">
+      <div class="hamburger" id="mobileHamburger">
+        <i class="fas fa-bars"></i>
+      </div>
+      <div class="mobile-header-title">
+        <i class="fas fa-landmark"></i><span>IRMANUFA</span>
+      </div>
+      <div class="mobile-header-placeholder"></div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="logo">
+        <div class="logo-icon"><i class="fas fa-landmark"></i></div>
+        <div class="logo-text">
+          <h2>IRMANUFA</h2>
+          <p>Digital Treasury</p>
+        </div>
+      </div>
+      <nav>
+        <button class="nav-btn active" data-page="dashboard">
+          <i class="fas fa-chart-line"></i><span>Dashboard</span>
+          <div class="nav-indicator"></div>
+        </button>
+        <button class="nav-btn" data-page="payment">
+          <i class="fas fa-hand-holding-usd"></i><span>Bayar Kas</span>
+          <div class="nav-indicator"></div>
+        </button>
+        <button class="nav-btn" data-page="expense">
+          <i class="fas fa-receipt"></i><span>Pengeluaran</span>
+          <div class="nav-indicator"></div>
+        </button>
+        <button class="nav-btn" data-page="members">
+          <i class="fas fa-users"></i><span>Data Anggota</span>
+          <div class="nav-indicator"></div>
+        </button>
+        <button class="nav-btn" data-page="transactions">
+          <i class="fas fa-exchange-alt"></i><span>Transaksi</span>
+          <div class="nav-indicator"></div>
+        </button>
+        <button class="nav-btn" data-page="report">
+          <i class="fas fa-file-pdf"></i><span>Laporan PDF</span>
+          <div class="nav-indicator"></div>
+        </button>
+        <button class="nav-btn" data-page="whatsapp">
+          <i class="fab fa-whatsapp"></i><span>Kirim WA</span>
+          <div class="nav-indicator"></div>
+        </button>
+        <button class="nav-btn" data-page="dailyreset">
+          <i class="fas fa-calendar-day"></i><span>Reset Data</span>
+          <div class="nav-indicator"></div>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="iuran-badge">
+          <i class="fas fa-coins"></i><span>Iuran: Rp2.000/minggu</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="top-header">
+        <div class="header-title">
+          <h1>Kabinet <span class="gradient-text">Golden Generation</span></h1>
+          <p>IRMANUFA • Masa Bakti 2027-2029</p>
+        </div>
+        <div class="header-stats">
+          <div class="live-clock" id="liveClock"></div>
+        </div>
+      </div>
+
+      <!-- Dashboard -->
+      <div id="page-dashboard" class="page active">
+        <div class="stats-grid">
+          <div class="stat-card income">
+            <div class="stat-icon"><i class="fas fa-arrow-down"></i></div>
+            <div class="stat-info">
+              <span>Total Kas Masuk</span>
+              <h2 id="totalIncome">Rp 0</h2>
+            </div>
+            <div class="stat-glow"></div>
+          </div>
+          <div class="stat-card outcome">
+            <div class="stat-icon"><i class="fas fa-arrow-up"></i></div>
+            <div class="stat-info">
+              <span>Total Kas Keluar</span>
+              <h2 id="totalExpense">Rp 0</h2>
+            </div>
+            <div class="stat-glow"></div>
+          </div>
+          <div class="stat-card active-members">
+            <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+            <div class="stat-info">
+              <span>Anggota Aktif</span>
+              <h2 id="activeCount">0</h2>
+            </div>
+            <div class="stat-glow"></div>
+          </div>
+          <div class="stat-card compliant">
+            <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+            <div class="stat-info">
+              <span>Terpatuh</span>
+              <h2 id="topMemberName">-</h2>
+              <small id="topMemberCount"></small>
+            </div>
+            <div class="stat-glow"></div>
+          </div>
+        </div>
+
+        <div class="card glass">
+          <div class="card-title">
+            <i class="fas fa-calendar-alt"></i>
+            <h3>Ringkasan Bulan Ini</h3>
+          </div>
+          <div class="month-summary">
+            <div class="summary-item">
+              <span>📥 Pemasukan</span><strong id="monthIncome">Rp 0</strong>
+              <div class="summary-progress income-progress"></div>
+            </div>
+            <div class="summary-item">
+              <span>📤 Pengeluaran</span><strong id="monthExpense">Rp 0</strong>
+              <div class="summary-progress expense-progress"></div>
+            </div>
+            <div class="summary-item">
+              <span>💵 Saldo</span><strong id="monthBalance">Rp 0</strong>
+              <div class="summary-progress balance-progress"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card glass">
+          <div class="card-title">
+            <i class="fas fa-chart-line"></i>
+            <h3>Tren Kas 7 Hari Terakhir</h3>
+            <span class="badge-live">LIVE</span>
+          </div>
+          <div class="chart-container"><canvas id="trendChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Bayar Kas -->
+      <div id="page-payment" class="page">
+        <div class="card glass">
+          <div class="card-title">
+            <i class="fas fa-hand-holding-usd"></i>
+            <h3>Form Pembayaran Kas</h3>
+          </div>
+          <div class="info-banner neon-info">
+            <i class="fas fa-info-circle"></i
+            ><span
+              >💡 Iuran standar Rp2.000/minggu. Bayar lebih untuk tunggakan
+              (kelipatan 2.000)</span
+            >
+          </div>
+          <div class="search-box">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="🔍 Cari nama, kode, atau divisi..."
+              class="search-input"
+            />
+            <select id="divisionSelect" class="division-select">
+              <option value="">Semua Divisi</option>
+              <option value="Badan Pengawas Harian">
+                Badan Pengawas Harian
+              </option>
+              <option value="Divisi Keagamaan & Kemasjidan">
+                Divisi Keagamaan & Kemasjidan
+              </option>
+              <option value="Divisi Hubungan Masyarakat">
+                Divisi Hubungan Masyarakat
+              </option>
+              <option value="Divisi Peringatan Hari Besar Islam">
+                Divisi Peringatan Hari Besar Islam
+              </option>
+              <option value="Divisi Pengembangan SDM">
+                Divisi Pengembangan SDM
+              </option>
+              <option value="Divisi Kesekretariatan">
+                Divisi Kesekretariatan
+              </option>
+              <option value="Divisi Publikasi Dekorasi & Dokumentasi">
+                Divisi Publikasi Dekorasi & Dokumentasi
+              </option>
+              <option value="Anggota Pasif">Anggota Pasif</option>
+            </select>
+          </div>
+          <div id="memberList" class="member-list"></div>
+        </div>
+      </div>
+
+      <!-- Pengeluaran -->
+      <div id="page-expense" class="page">
+        <div class="card glass">
+          <div class="card-title">
+            <i class="fas fa-receipt"></i>
+            <h3>Catat Pengeluaran Kas</h3>
+          </div>
+          <form id="expenseForm" class="form">
+            <div class="form-group">
+              <label>📋 Keterangan</label
+              ><input
+                type="text"
+                id="expenseDesc"
+                placeholder="Contoh: Pembelian snack rapat"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>💰 Jumlah (Rp)</label
+              ><input
+                type="number"
+                id="expenseAmount"
+                placeholder="Masukkan nominal"
+                required
+                min="1"
+              />
+            </div>
+            <div class="form-group">
+              <label>👤 Penerima</label
+              ><input
+                type="text"
+                id="expenseRecipient"
+                placeholder="Nama penerima (opsional)"
+              />
+            </div>
+            <button type="submit" class="btn-primary neon-btn">
+              <i class="fas fa-save"></i> Simpan Pengeluaran
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Data Anggota -->
+      <div id="page-members" class="page">
+        <div class="card glass">
+          <div class="card-title">
+            <i class="fas fa-users"></i>
+            <h3>Manajemen Data Anggota</h3>
+            <button id="addMemberBtn" class="btn-success neon-btn">
+              <i class="fas fa-plus"></i> Tambah
+            </button>
+          </div>
+          <div id="membersList" class="members-crud-list"></div>
+        </div>
+      </div>
+
+      <!-- Transaksi -->
+      <div id="page-transactions" class="page">
+        <div class="card glass">
+          <div class="card-title">
+            <i class="fas fa-history"></i>
+            <h3>Riwayat Transaksi</h3>
+            <button
+              id="clearAllTransactionsBtn"
+              class="btn-danger neon-btn"
+              style="padding: 8px 16px; font-size: 12px"
+            >
+              <i class="fas fa-trash-alt"></i> Hapus Semua
+            </button>
+          </div>
+          <div id="transactionsList" class="transactions-list"></div>
+        </div>
+      </div>
+
+      <!-- Laporan PDF -->
+      <div id="page-report" class="page">
+        <div class="card glass">
+          <div class="card-title">
+            <i class="fas fa-file-pdf"></i>
+            <h3>Cetak Laporan Bulanan</h3>
+          </div>
+          <div class="report-controls">
+            <select id="monthSelect" class="month-select"></select>
+            <button id="printReportBtn" class="btn-primary neon-btn">
+              <i class="fas fa-print"></i> Cetak PDF
+            </button>
+          </div>
+          <div class="report-preview">
+            <p class="text-muted">
+              Pilih bulan, klik "Cetak PDF" untuk download laporan resmi.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- WhatsApp -->
+      <div id="page-whatsapp" class="page">
+        <div class="card glass">
+          <div class="card-title">
+            <i class="fab fa-whatsapp"></i>
+            <h3>Kirim Laporan via WhatsApp</h3>
+          </div>
+          <div class="wa-form">
+            <div class="form-group">
+              <label>📱 Nomor WhatsApp</label
+              ><input
+                type="tel"
+                id="waNumber"
+                placeholder="6281234567890"
+                value="6289676529928"
+              /><small
+                >Format internasional (62xxx) tanpa + atau 0 di depan</small
+              >
+            </div>
+            <div class="form-group">
+              <label>📅 Periode Laporan</label>
+              <select id="waPeriod" class="division-select">
+                <option value="today">📆 Hari Ini</option>
+                <option value="yesterday">📆 Kemarin</option>
+                <option value="week">📊 Minggu Ini</option>
+                <option value="month">📈 Bulan Ini</option>
+                <option value="custom">📅 Custom</option>
+              </select>
+            </div>
+            <div class="form-group" id="customDateGroup" style="display: none">
+              <label>Tanggal</label>
+              <div class="date-range">
+                <input type="date" id="customStartDate" /><span>s/d</span
+                ><input type="date" id="customEndDate" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>📋 Jenis Laporan</label>
+              <select id="waReportType" class="division-select">
+                <option value="summary">💰 Ringkasan Kas</option>
+                <option value="payers">👥 Daftar Pembayar</option>
+                <option value="full">📋 Laporan Lengkap</option>
+              </select>
+            </div>
+            <button id="sendWABtn" class="btn-primary wa-btn neon-btn">
+              <i class="fab fa-whatsapp"></i> Kirim via WhatsApp
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reset Data -->
+      <div id="page-dailyreset" class="page">
+        <div class="card glass">
+          <div class="card-title">
+            <i class="fas fa-trash-alt" style="color: #f59e0b"></i>
+            <h3>Reset Data Harian</h3>
+          </div>
+          <div class="info-banner warning-banner">
+            <i class="fas fa-exclamation-triangle"></i
+            ><span
+              >⚠️ Menghapus SEMUA transaksi hari ini (Pemasukan &
+              Pengeluaran)</span
+            >
+          </div>
+          <div class="reset-stats">
+            <div class="reset-stat-item">
+              <span>📊 Transaksi Hari Ini</span
+              ><strong id="todayTransCount">0</strong>
+            </div>
+            <div class="reset-stat-item">
+              <span>💰 Total Pemasukan</span
+              ><strong id="todayIncomeTotal">Rp 0</strong>
+            </div>
+            <div class="reset-stat-item">
+              <span>📤 Total Pengeluaran</span
+              ><strong id="todayExpenseTotal">Rp 0</strong>
+            </div>
+            <div class="reset-stat-item">
+              <span>👥 Pembayar</span><strong id="todayPayersCount">0</strong>
+            </div>
+          </div>
+          <div class="reset-confirmation">
+            <div class="checkbox-group">
+              <input type="checkbox" id="confirmReset" /><label
+                >✓ Saya yakin menghapus data hari ini</label
+              >
+            </div>
+            <button id="resetDailyBtn" class="btn-warning neon-btn" disabled>
+              <i class="fas fa-trash-alt"></i> Hapus Data Hari Ini
+            </button>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="card-title">
+            <i class="fas fa-database" style="color: #dc2626"></i>
+            <h3>Reset Semua Data</h3>
+          </div>
+          <div class="info-banner danger-banner">
+            <i class="fas fa-exclamation-circle"></i
+            ><span
+              >⚠️ PERINGATAN: Menghapus SEMUA data. Tidak dapat
+              dikembalikan!</span
+            >
+          </div>
+          <div class="reset-confirmation">
+            <div class="checkbox-group">
+              <input type="checkbox" id="confirmResetAll" /><label
+                >✓ Saya mengerti konsekuensinya</label
+              >
+            </div>
+            <button id="resetAllBtn" class="btn-danger neon-btn" disabled>
+              <i class="fas fa-trash-alt"></i> Reset Semua Data
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Modals -->
+    <div id="memberModal" class="modal">
+      <div class="modal-box glass">
+        <span class="modal-close">&times;</span>
+        <h3 id="modalTitle">Tambah Anggota</h3>
+        <form id="memberForm">
+          <input type="hidden" id="editCode" />
+          <div class="form-group">
+            <label>Nama Lengkap *</label
+            ><input type="text" id="memberName" required />
+          </div>
+          <div class="form-group">
+            <label>Jenis Kelamin</label
+            ><select id="memberGender">
+              <option value="L">Laki-laki</option>
+              <option value="P">Perempuan</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Divisi *</label
+            ><input
+              type="text"
+              id="memberDivision"
+              required
+              placeholder="Divisi"
+            />
+          </div>
+          <div class="form-group">
+            <label>Jabatan</label
+            ><input type="text" id="memberRole" placeholder="Jabatan" />
+          </div>
+          <button type="submit" class="btn-primary full-width neon-btn">
+            Simpan
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div id="customPaymentModal" class="modal">
+      <div class="modal-box glass">
+        <span class="modal-close" id="closePaymentModal">&times;</span>
+        <h3><i class="fas fa-money-bill-wave"></i> Bayar Lain</h3>
+        <div class="info-banner neon-info">
+          <i class="fas fa-info-circle"></i
+          ><span>💡 Iuran standar Rp2.000/minggu</span>
+        </div>
+        <div class="form-group">
+          <label>Nominal Cepat:</label>
+          <div class="preset-buttons">
+            <button type="button" class="preset-btn" data-amount="2000">
+              Rp2.000</button
+            ><button type="button" class="preset-btn" data-amount="4000">
+              Rp4.000
+            </button>
+            <button type="button" class="preset-btn" data-amount="6000">
+              Rp6.000</button
+            ><button type="button" class="preset-btn" data-amount="8000">
+              Rp8.000
+            </button>
+            <button type="button" class="preset-btn" data-amount="10000">
+              Rp10.000</button
+            ><button type="button" class="preset-btn" data-amount="16000">
+              Rp16.000
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Nominal Sendiri:</label
+          ><input
+            type="number"
+            id="customAmount"
+            placeholder="Masukkan nominal..."
+            class="search-input"
+          />
+        </div>
+        <div class="form-group">
+          <label>Keterangan:</label
+          ><input
+            type="text"
+            id="paymentNote"
+            placeholder="Opsional"
+            class="search-input"
+          />
+        </div>
+        <button id="confirmPaymentBtn" class="btn-primary full-width neon-btn">
+          <i class="fas fa-check"></i> Konfirmasi
+        </button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
